@@ -21,9 +21,17 @@ function loadOpenSeadragon() {
 }
 
 function render({ model, el }) {
+  const normalizeHeight = (value) => {
+    const text = `${value ?? ""}`.trim();
+    if (!text) {
+      return "500px";
+    }
+    return /^\d+(\.\d+)?$/.test(text) ? `${text}px` : text;
+  };
+
   const container = document.createElement("div");
   container.style.width = "100%";
-  container.style.height = model.get("height") || "500px";
+  container.style.height = normalizeHeight(model.get("height"));
   el.appendChild(container);
 
   let viewer;
@@ -44,7 +52,7 @@ function render({ model, el }) {
     };
 
     const applyHeightFromModel = () => {
-      container.style.height = model.get("height") || "500px";
+      container.style.height = normalizeHeight(model.get("height"));
       if (viewer) {
         viewer.forceResize();
       }
