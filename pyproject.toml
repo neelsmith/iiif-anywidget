@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iiif_anywidget"
-version = "0.2.0"
-description = "Widgets to view images served frdom IIIF sources"
+version = "0.3.0"
+description = "Widgets to view images served from IIIF sources"
 dependencies = [
     "anywidget>=0.9.0",
 ]
