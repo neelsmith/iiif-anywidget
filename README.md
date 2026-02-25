@@ -3,9 +3,8 @@
 `anywidget`s to work with images served from IIIF sources in marimo notebooks.
 
 
-- [notebooks gallery](https://neelsmith.github.io/iiif-anywidget/)
 
-## Usage
+## IIIF image viewer widget
 
 ```python
 from iiif_anywidget import IIIFViewer
@@ -16,8 +15,23 @@ viewer = IIIFViewer(
 viewer
 ```
 
-## Usage in marimo
 
-A complete marimo notebook:
+## IIIF manifest browser
+
+
+
+```python
+from iiif_anywidget import IIIFThumbnailGallery
+
+gallery = IIIFThumbnailGallery(
+	manifest_url="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest"
+)
+gallery
+```
+
+
+## Examples in marimo
+
+A complete image viewer:
 
 ![Image viewer](./simpleviewer.png)

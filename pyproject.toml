@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iiif_anywidget"
-version = "0.1.0"
+version = "0.2.0"
 description = "Widgets to view images served frdom IIIF sources"
 dependencies = [
     "anywidget>=0.9.0",
@@ -20,7 +20,7 @@ packages = ["src/iiif_anywidget"]
 dependencies = ["hatch-jupyter-builder"]
 build-function = "hatch_jupyter_builder.npm_builder"
 # This tells the build process to run 'npm run build' inside the 'js/' folder
-ensured-targets = ["src/iiif_anywidget/static/index.js"]
+ensured-targets = ["src/iiif_anywidget/static/index.js", "src/iiif_anywidget/static/thumbnail_gallery.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 path = "js"
