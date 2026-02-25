@@ -16,6 +16,21 @@ viewer = IIIFViewer(
 viewer
 ```
 
+Thumbnail gallery widget:
+
+```python
+import json
+
+from iiif_anywidget import IIIFThumbnailGallery, extract_thumbnails
+
+thumbnails = extract_thumbnails(manifest_json)
+gallery = IIIFThumbnailGallery(
+	items_json=json.dumps(thumbnails),
+	selected_info_url=thumbnails[0]["info_url"] if thumbnails else "",
+)
+gallery
+```
+
 ## Usage in marimo
 
 A complete marimo notebook:
