@@ -1,0 +1,9 @@
+{
+  "name": "iiif-anywidget-js",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Frontend build scaffold for iiif-anywidget",
+  "scripts": {
+    "build": "mkdir -p ../src/iiif_anywidget/static && cp src/index.js ../src/iiif_anywidget/static/index.js"
+  }
+}

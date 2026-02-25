@@ -10,15 +10,17 @@ dependencies = [
     "anywidget>=0.9.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/iiif_anywidget"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"iiif_anywidget/static" = "share/jupyter/nbextensions/iiif_anywidget"
+"src/iiif_anywidget/static" = "share/jupyter/nbextensions/iiif_anywidget"
 
 [tool.hatch.build.hooks.jupyter-builder]
 dependencies = ["hatch-jupyter-builder"]
 build-function = "hatch_jupyter_builder.npm_builder"
 # This tells the build process to run 'npm run build' inside the 'js/' folder
-ensured-targets = ["iiif_anywidget/static/index.js"]
+ensured-targets = ["src/iiif_anywidget/static/index.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 path = "js"
