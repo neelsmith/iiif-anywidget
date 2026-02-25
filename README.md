@@ -21,16 +21,14 @@ viewer
 
 
 ```python
-import json
-from iiif_anywidget import IIIFThumbnailGallery, extract_thumbnails
+from iiif_anywidget import IIIFThumbnailGallery
 
-thumbnails = extract_thumbnails(manifest_json)
 gallery = IIIFThumbnailGallery(
-	items_json=json.dumps(thumbnails),
-	selected_info_url=thumbnails[0]["info_url"] if thumbnails else "",
+	manifest_url="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest"
 )
 gallery
 ```
+
 
 ## Examples in marimo
 

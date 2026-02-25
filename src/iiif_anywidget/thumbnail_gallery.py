@@ -1,4 +1,7 @@
+import json
 from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlopen
 
 import anywidget
 import traitlets
@@ -171,5 +174,41 @@ def extract_thumbnails(manifest_input):
 
 class IIIFThumbnailGallery(anywidget.AnyWidget):
     _esm = Path(__file__).parent / "static" / "thumbnail_gallery.js"
+    manifest_url = traitlets.Unicode("").tag(sync=True)
     items_json = traitlets.Unicode("[]").tag(sync=True)
     selected_info_url = traitlets.Unicode("").tag(sync=True)
+    manifest_error = traitlets.Unicode("").tag(sync=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._load_manifest()
+
+    @traitlets.observe("manifest_url")
+    def _on_manifest_url_change(self, _change):
+        self._load_manifest()
+
+    def _load_manifest(self):
+        url_value = (self.manifest_url or "").strip()
+        if not url_value:
+            self.manifest_error = ""
+            return
+
+        try:
+            with urlopen(url_value) as response:
+                manifest_data = json.load(response)
+        except (URLError, ValueError, OSError) as err:
+            self.items_json = "[]"
+            self.selected_info_url = ""
+            self.manifest_error = str(err)
+            return
+
+        thumbnails = extract_thumbnails(manifest_data)
+        self.items_json = json.dumps(thumbnails)
+        self.manifest_error = ""
+
+        default_info_url = ""
+        if thumbnails and isinstance(thumbnails[0], dict):
+            default_info_url = (thumbnails[0].get("info_url") or "").strip()
+
+        if default_info_url:
+            self.selected_info_url = default_info_url
