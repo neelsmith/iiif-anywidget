@@ -1,6 +1,9 @@
 # iiif-anywidget
 
-`anywidget`s for working with images served from IIIF sources.
+`anywidget`s to work with images served from IIIF sources in marimo notebooks.
+
+
+- [notebooks gallery](https://neelsmith.github.io/iiif-anywidget/)
 
 ## Usage
 
