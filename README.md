@@ -6,6 +6,16 @@
 
 ## 1. IIIF image viewer widget
 
+```python
+from iiif_anywidget import IIIFViewer
+
+viewer = IIIFViewer(
+    url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
+    height="650px",  # optional, defaults to "500px"
+)
+viewer
+```
+
 A complete marimo notebook:
 
 

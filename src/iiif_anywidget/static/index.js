@@ -23,7 +23,7 @@ function loadOpenSeadragon() {
 function render({ model, el }) {
   const container = document.createElement("div");
   container.style.width = "100%";
-  container.style.height = "500px";
+  container.style.height = model.get("height") || "500px";
   el.appendChild(container);
 
   let viewer;
@@ -43,9 +43,21 @@ function render({ model, el }) {
       }
     };
 
+    const applyHeightFromModel = () => {
+      container.style.height = model.get("height") || "500px";
+      if (viewer) {
+        viewer.forceResize();
+      }
+    };
+
     openFromModel();
+    applyHeightFromModel();
     model.on("change:url", openFromModel);
-    stopListening = () => model.off("change:url", openFromModel);
+    model.on("change:height", applyHeightFromModel);
+    stopListening = () => {
+      model.off("change:url", openFromModel);
+      model.off("change:height", applyHeightFromModel);
+    };
 
     const openFromThumbnailSelection = (event) => {
       const selectedUrl = event?.detail?.url;

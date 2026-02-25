@@ -5,6 +5,7 @@
 #   "marimo>=0.20.2",
 # ]
 # ///
+
 import marimo
 
 __generated_with = "0.20.2"
@@ -36,7 +37,7 @@ def _(imgurl):
 
 @app.cell
 def _(IIIFViewer, imgurl):
-    viewer = IIIFViewer(url=imgurl.value) if imgurl.value else None
+    viewer = IIIFViewer(url=imgurl.value, height="100px") if imgurl.value else None
     return (viewer,)
 
 
@@ -51,9 +52,8 @@ def _(mo):
     imgurl = mo.ui.text(
         full_width=True,
         label="*IIIF info.json URL*",
-        value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
+        value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json"
     )
-
     return (imgurl,)
 
 
