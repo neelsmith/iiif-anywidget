@@ -1,3 +1,8 @@
+# /// script
+# dependencies = [
+#   "iiif_anywidget",
+# ]
+# ///
 import marimo
 
 __generated_with = "0.20.2"
