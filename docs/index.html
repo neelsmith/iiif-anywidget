@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./notebooks/favicon.ico" />
+    <link rel="apple-touch-icon" href="./notebooks/apple-touch-icon.png" />
+    <link rel="manifest" href="./notebooks/manifest.json" />
+    
+    <!-- Preload the fonts to match marimo styling -->
+    <link rel="preload" href="./notebooks/assets/Lora-VariableFont_wght-B2ootaw-.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./notebooks/assets/PTSans-Regular-CxL0S8W7.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./notebooks/assets/PTSans-Bold-D9fedIX3.ttf" as="font" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="IIIF anywidgets" />
+    
+    <title>IIIF anywidgets</title>
+    
+    <style>
+      @font-face {
+        font-family: 'Lora';
+        src: url('./notebooks/assets/Lora-VariableFont_wght-B2ootaw-.ttf') format('truetype');
+        font-weight: 100 900;
+        font-display: swap;
+      }
+      
+      @font-face {
+        font-family: 'PT Sans';
+        src: url('./notebooks/assets/PTSans-Regular-CxL0S8W7.ttf') format('truetype');
+        font-weight: normal;
+        font-display: swap;
+      }
+      
+      @font-face {
+        font-family: 'PT Sans';
+        src: url('./notebooks/assets/PTSans-Bold-D9fedIX3.ttf') format('truetype');
+        font-weight: bold;
+        font-display: swap;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'PT Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      
+      .container {
+        max-width: 768px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+      
+      h1 {
+        font-family: 'Lora', Georgia, 'Times New Roman', serif;
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1a1a1a;
+      }
+      
+      .subtitle {
+        font-size: 1.125rem;
+        color: #666;
+        margin-bottom: 3rem;
+        font-weight: normal;
+      }
+      
+      .card {
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      
+      .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-color: #d0d0d0;
+      }
+      
+      .card h2 {
+        font-family: 'Lora', Georgia, 'Times New Roman', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #1a1a1a;
+      }
+      
+      .card p {
+        color: #4a4a4a;
+        margin-bottom: 1.25rem;
+        line-height: 1.65;
+      }
+      
+      .card a {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        background-color: #5e81ac;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+      }
+      
+      .card a:hover {
+        background-color: #4c6c92;
+      }
+      
+      .version-info {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        font-size: 0.875rem;
+        color: #666;
+        font-style: italic;
+        margin-bottom: 2rem;
+      }
+      
+      .version-info strong {
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      
+      footer {
+        text-align: center;
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e5e5;
+        color: #888;
+        font-size: 0.875rem;
+      }
+      
+      @media (max-width: 768px) {
+        .container {
+          padding: 2rem 1.5rem;
+        }
+        
+        h1 {
+          font-size: 2rem;
+        }
+        
+        .card {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>IIIF anywidgets</h1>
+      
+
+      
+      <div class="card">
+        <h2>Simple image viewer</h2>
+        <p>
+          Interactively pan and zoom a IIIF image in a marimo notebook using the `IIIFViewer` class.
+        </p>
+        <a href="./notebooks/simpleviewer.html">Launch Notebook</a>
+      </div>
+      
+      <footer>
+        <p>IIIF anywidgets</p>
+      </footer>
+    </div>
+  </body>
+</html>
