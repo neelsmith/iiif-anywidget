@@ -20,7 +20,7 @@ packages = ["src/iiif_anywidget"]
 dependencies = ["hatch-jupyter-builder"]
 build-function = "hatch_jupyter_builder.npm_builder"
 # This tells the build process to run 'npm run build' inside the 'js/' folder
-ensured-targets = ["src/iiif_anywidget/static/index.js", "src/iiif_anywidget/static/thumbnail_gallery.js"]
+ensured-targets = ["src/iiif_anywidget/static/index.js", "src/iiif_anywidget/static/thumbnail_gallery.js", "src/iiif_anywidget/static/overlay_viewer.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 path = "js"
