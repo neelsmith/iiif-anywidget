@@ -4,19 +4,14 @@
 
 
 
-## IIIF image viewer widget
+## 1. IIIF image viewer widget
 
-```python
-from iiif_anywidget import IIIFViewer
-
-viewer = IIIFViewer(
-	url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json"
-)
-viewer
-```
+A complete marimo notebook:
 
 
-## IIIF manifest browser
+![Image viewer](./simpleviewer.png)
+
+## 2. IIIF manifest browser
 
 
 
@@ -29,7 +24,11 @@ gallery = IIIFThumbnailGallery(
 gallery
 ```
 
-## IIIF image overlay viewer
+Manifest browser + image viewer in a marimo notebook:
+
+![Thumbnail gallery](./thumby.gif)
+
+## 3a. IIIF image overlay viewer
 
 ```python
 from iiif_anywidget import IIIFImageOverlayViewer
@@ -39,31 +38,60 @@ viewer = IIIFImageOverlayViewer(
 	rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
 )
 viewer
-
-# Clicked image coordinates (updated after each Alt/Option-click)
-viewer.pixel_x, viewer.pixel_y
-viewer.normalized_x, viewer.normalized_y
 ```
 
-`rectangles_csv` expects one rectangle per line as `x,y,width,height`, with normalized values in `[0,1]`.
-Alt/Option-clicking the image updates `pixel_x`, `pixel_y`, `normalized_x`, and `normalized_y`.
+A complete overlay viewer:
+
+![Overlays](./simpleoverlay.png)
 
 
-## Examples in marimo
 
-A complete image viewer:
+## 3b. IIIF image overlay viewer observing user actions
 
-![Image viewer](./simpleviewer.png)
 
-Minimal overlay example:
+![Track alt-click](./clicky.gif)
 
-- `marimo/minimal_overlay_viewer.py`
+The `IIIFImageOverlayViewer` widget tracks instances of alt- (option) click as pixel values, and normalized to a percentage exprtessed as 0.0-1.0. Getting access to these values requires a little more set up. We need to create the marimo states we can listen to:
 
-### Why Cells 4 and 5 matter in `minimal_overlay_viewer.py`
+```python
+coords_state, set_coords_state = mo.state(
+    {
+        "pixel_x": -1.0,
+        "pixel_y": -1.0,
+        "normalized_x": -1.0,
+        "normalized_y": -1.0,
+    }
+)
+```
 
-In that notebook, Cells 4 and 5 are necessary if you want the displayed coordinate values to update live after each Alt/Option-click:
+We attach a `viewer.observe(...)` handler to the widget traits (`pixel_x`, `pixel_y`, `normalized_x`, `normalized_y`) and pushes trait changes to that state.
 
-- **Cell 4** creates marimo state (`coords_state`, `set_coords_state`) that the output cell can react to.
-- **Cell 5** attaches a `viewer.observe(...)` handler to widget traits (`pixel_x`, `pixel_y`, `normalized_x`, `normalized_y`) and pushes trait changes into that state.
+```python
+names = ["pixel_x", "pixel_y", "normalized_x", "normalized_y"]
+
+old_observer = getattr(viewer, "_marimo_observer", None)
+if old_observer is not None:
+    viewer.unobserve(old_observer, names=names)
+
+viewer.observe(push_state, names=names)
+viewer._marimo_observer = push_state
+push_state()
+```
+
+A utility function to update values from the `viewer` object:
+
+```python
+def push_state(_change=None):
+    "Update value of coordinates state from viewer object."
+    set_coords_state(
+        {
+            "pixel_x": float(viewer.pixel_x),
+            "pixel_y": float(viewer.pixel_y),
+            "normalized_x": float(viewer.normalized_x),
+            "normalized_y": float(viewer.normalized_y),
+        }
+    )
+```
+
 
 Without this bridge, reading `viewer.pixel_x` directly in a markdown cell is often non-reactive in marimo, so the UI may not refresh even though the widget traits are changing.

@@ -41,8 +41,26 @@ def _():
             del sys.modules[module_name]
         importlib.invalidate_caches()
         from iiif_anywidget import IIIFImageOverlayViewer
-
     return (IIIFImageOverlayViewer,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    # IIIF image viewer with user interaction
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(coords_state, mo):
+    c = coords_state()
+    mo.md(f"""
+    *Last click* (pixels): `{c['pixel_x']:.2f},  {c['pixel_y']:.2f}`
+
+    *Normalized* (0.0:1.0): `{c['normalized_x']:.6f}, {c['normalized_y']:.6f}`
+    """)
+    return
 
 
 @app.cell
@@ -53,6 +71,36 @@ def _(IIIFImageOverlayViewer):
         rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
     )
     return (viewer,)
+
+
+@app.cell(hide_code=True)
+def _(viewer):
+    viewer
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## Configuring observer for coordinates
+    """)
+    return
+
+
+@app.cell
+def _(set_coords_state, viewer):
+    def push_state(_change=None):
+        "Update valie of coordinates state from viewer object."
+        set_coords_state(
+            {
+                "pixel_x": float(viewer.pixel_x),
+                "pixel_y": float(viewer.pixel_y),
+                "normalized_x": float(viewer.normalized_x),
+                "normalized_y": float(viewer.normalized_y),
+            }
+        )
+
+    return (push_state,)
 
 
 @app.cell
@@ -69,43 +117,16 @@ def _(mo):
 
 
 @app.cell
-def _(set_coords_state, viewer):
+def _(push_state, viewer):
     names = ["pixel_x", "pixel_y", "normalized_x", "normalized_y"]
 
     old_observer = getattr(viewer, "_marimo_observer", None)
     if old_observer is not None:
         viewer.unobserve(old_observer, names=names)
 
-    def push_state(_change=None):
-        set_coords_state(
-            {
-                "pixel_x": float(viewer.pixel_x),
-                "pixel_y": float(viewer.pixel_y),
-                "normalized_x": float(viewer.normalized_x),
-                "normalized_y": float(viewer.normalized_y),
-            }
-        )
-
     viewer.observe(push_state, names=names)
     viewer._marimo_observer = push_state
     push_state()
-    return
-
-
-@app.cell(hide_code=True)
-def _(coords_state, mo):
-    c = coords_state()
-    mo.md(f"""
-    Last pixel click: ({c['pixel_x']:.2f}, {c['pixel_y']:.2f})
-
-    Last normalized click: ({c['normalized_x']:.6f}, {c['normalized_y']:.6f})
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(viewer):
-    viewer
     return
 
 
