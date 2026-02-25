@@ -39,9 +39,14 @@ viewer = IIIFImageOverlayViewer(
 	rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
 )
 viewer
+
+# Clicked image coordinates (updated after each Alt/Option-click)
+viewer.pixel_x, viewer.pixel_y
+viewer.normalized_x, viewer.normalized_y
 ```
 
 `rectangles_csv` expects one rectangle per line as `x,y,width,height`, with normalized values in `[0,1]`.
+Alt/Option-clicking the image updates `pixel_x`, `pixel_y`, `normalized_x`, and `normalized_y`.
 
 
 ## Examples in marimo
