@@ -11,8 +11,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `IIIFImageOverlayViewer` class, an `anywidget` object that displays IIIF images with outlined rectangle overlays from normalized CSV rows (`x,y,width,height` in `[0,1]`), and reports both pixel and normalized x,y coordinates on alt-click.
 
 
-
-
 ## 0.2.0 - 2026-02-25
 
 ### Adds
