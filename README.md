@@ -15,14 +15,6 @@ viewer
 
 ## Usage in marimo
 
-```python
-import marimo as mo
-from iiif_anywidget import IIIFViewer
+A complete marimo notebook:
 
-viewer = IIIFViewer(
-    url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json"
-)
-
-mo.md("### IIIF Viewer")
-viewer
-```
+![Image viewer](./simpleviewer.png)
