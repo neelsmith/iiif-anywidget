@@ -54,3 +54,16 @@ Alt/Option-clicking the image updates `pixel_x`, `pixel_y`, `normalized_x`, and 
 A complete image viewer:
 
 ![Image viewer](./simpleviewer.png)
+
+Minimal overlay example:
+
+- `marimo/minimal_overlay_viewer.py`
+
+### Why Cells 4 and 5 matter in `minimal_overlay_viewer.py`
+
+In that notebook, Cells 4 and 5 are necessary if you want the displayed coordinate values to update live after each Alt/Option-click:
+
+- **Cell 4** creates marimo state (`coords_state`, `set_coords_state`) that the output cell can react to.
+- **Cell 5** attaches a `viewer.observe(...)` handler to widget traits (`pixel_x`, `pixel_y`, `normalized_x`, `normalized_y`) and pushes trait changes into that state.
+
+Without this bridge, reading `viewer.pixel_x` directly in a markdown cell is often non-reactive in marimo, so the UI may not refresh even though the widget traits are changing.
