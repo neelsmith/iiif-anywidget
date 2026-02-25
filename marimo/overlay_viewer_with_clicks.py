@@ -64,11 +64,51 @@ def _(coords_state, mo):
 
 
 @app.cell
-def _(IIIFImageOverlayViewer):
+def _(mo):
+    imgurl = mo.ui.text(
+        full_width=True,
+        label="*IIIF info.json URL*",
+        value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
+    )
+    height_value = mo.ui.slider(
+        start=100,
+        stop=1200,
+        step=10,
+        value=600,
+        label="*Viewer height value*",
+    )
+    height_unit = mo.ui.dropdown(
+        options=["px", "vh", "%"],
+        value="px",
+        label="*Height unit*",
+    )
+    return height_unit, height_value, imgurl
+
+
+@app.cell
+def _(height_unit, height_value):
+    height = f"{height_value.value}{height_unit.value}"
+    return (height,)
+
+
+@app.cell
+def _(height, height_unit, height_value, imgurl, mo):
+    mo.vstack([
+        imgurl,
+        height_value,
+        height_unit,
+        mo.md(f"Current viewer height: **{height}**"),
+    ])
+    return
+
+
+@app.cell
+def _(IIIFImageOverlayViewer, height, imgurl):
 
     viewer = IIIFImageOverlayViewer(
-        url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
+        url=imgurl.value,
         rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
+        height=height,
     )
     return (viewer,)
 
