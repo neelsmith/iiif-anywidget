@@ -4,6 +4,6 @@
   "version": "0.0.1",
   "description": "Frontend build scaffold for iiif-anywidget",
   "scripts": {
-    "build": "mkdir -p ../src/iiif_anywidget/static && cp src/index.js ../src/iiif_anywidget/static/index.js && cp src/thumbnail_gallery.js ../src/iiif_anywidget/static/thumbnail_gallery.js && cp src/overlay_viewer.js ../src/iiif_anywidget/static/overlay_viewer.js"
+    "build": "mkdir -p ../src/iiif_anywidget/static && cp src/index.js ../src/iiif_anywidget/static/index.js && cp src/thumbnail_gallery.js ../src/iiif_anywidget/static/thumbnail_gallery.js"
   }
 }
