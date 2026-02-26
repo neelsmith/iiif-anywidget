@@ -14,6 +14,80 @@ app = marimo.App(width="medium")
 
 @app.cell(hide_code=True)
 def _():
+    import marimo as mo
+
+    return (mo,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    # View IIIF image with overlays
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(height_pixels, imgurl, mo):
+    mo.vstack([imgurl,height_pixels])
+    return
+
+
+@app.cell(hide_code=True)
+def _(viewer):
+    viewer
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## Create viewer
+    """)
+    return
+
+
+@app.cell
+def _():
+    mockrectangles = "0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22"
+    return (mockrectangles,)
+
+
+@app.cell
+def _(IIIFImageOverlayViewer, height, imgurl, mockrectangles):
+    viewer = IIIFImageOverlayViewer( url=imgurl.value, rectangles_csv= mockrectangles, height=height)
+    return (viewer,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## User selections
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    imgurl = mo.ui.text(value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
+        full_width=True, label="*IIIF info.json URL for image*")
+    return (imgurl,)
+
+
+@app.cell
+def _(mo):
+    height_pixels = mo.ui.slider(start=100,stop=1200,step=10,value=600, label="*Image height (pixels)*",show_value=True)
+    return (height_pixels,)
+
+
+@app.cell
+def _(height_pixels):
+    height = f"{height_pixels.value}px"
+    return (height,)
+
+
+@app.cell(hide_code=True)
+def _():
     # careful loading for development work:
     try:
         from iiif_anywidget import IIIFImageOverlayViewer
@@ -35,21 +109,6 @@ def _():
         importlib.invalidate_caches()
         from iiif_anywidget import IIIFImageOverlayViewer
     return (IIIFImageOverlayViewer,)
-
-
-@app.cell
-def _(IIIFImageOverlayViewer):
-    viewer = IIIFImageOverlayViewer(
-        url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
-        rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
-    )
-    return (viewer,)
-
-
-@app.cell
-def _(viewer):
-    viewer
-    return
 
 
 if __name__ == "__main__":

@@ -13,6 +13,112 @@ app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    # View images from IIIF manifest in marimo
+
+    Combine a `IIIFThumbnailGallery` (right) with an `IIIFViewer` (left).
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(manifest_url):
+    manifest_url
+    return
+
+
+@app.cell(hide_code=True)
+def _(galleryblock):
+    galleryblock
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## Creating a browser app
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    Create thumbnail gallery from IIIF manifest:
+    """)
+    return
+
+
+@app.cell
+def _(IIIFThumbnailGallery, manifest_url):
+    thumbnail_gallery = IIIFThumbnailGallery(manifest_url=manifest_url.value)
+    return (thumbnail_gallery,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    Find currently selected image in gallery:d
+    """)
+    return
+
+
+@app.cell
+def _(thumbnail_gallery):
+    image_info_url = thumbnail_gallery.selected_info_url.strip()
+    return (image_info_url,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    Display currently selected image in viewer:
+    """)
+    return
+
+
+@app.cell
+def _(IIIFViewer, image_info_url):
+    viewer = IIIFViewer(url=image_info_url)
+    return (viewer,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## User selection
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    manifest_url = mo.ui.text(
+        value="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest",
+        full_width=True,label="*Enter IIIF manifest URL*:")
+    return (manifest_url,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## Notebook layout
+    """)
+    return
+
+
+@app.cell
+def _(mo, thumbnail_gallery, viewer):
+    galleryblock = mo.hstack([
+            viewer,
+            mo.md(""),
+            thumbnail_gallery
+        ], widths=[75, 5, 20])
+    return (galleryblock,)
+
+
+@app.cell(hide_code=True)
 def _():
     import importlib
     import marimo as mo
@@ -35,67 +141,6 @@ def _():
         importlib.invalidate_caches()
         from iiif_anywidget import IIIFThumbnailGallery, IIIFViewer
     return IIIFThumbnailGallery, IIIFViewer, mo
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    manifest_url = mo.ui.text(
-        value="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest",
-        full_width=True,
-        label="*Enter IIIF manifest URL*:",
-    )
-    return (manifest_url,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""
-    # View images from IIIF manifest in marimo
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(manifest_url):
-    manifest_url
-    return
-
-
-@app.cell
-def _(IIIFThumbnailGallery, manifest_url):
-    thumbnail_gallery = IIIFThumbnailGallery(manifest_url=manifest_url.value)
-    return (thumbnail_gallery,)
-
-
-@app.cell
-def _(thumbnail_gallery):
-    image_info_url = thumbnail_gallery.selected_info_url.strip()
-    return (image_info_url,)
-
-
-@app.cell
-def _(IIIFViewer, image_info_url):
-    viewer = IIIFViewer(url=image_info_url)
-    return (viewer,)
-
-
-@app.cell(hide_code=True)
-def _(image_info_url, mo, thumbnail_gallery, viewer):
-    galleryblock = mo.hstack([
-        viewer,
-        mo.md(""),
-        thumbnail_gallery
-    ], widths=[75, 5, 20])
-
-
-    mo.vstack(
-        [mo.md(f"""Viewing `{image_info_url}`"""),
-        galleryblock    
-        ]
-    )
-
-
-    return
 
 
 @app.cell(hide_code=True)
