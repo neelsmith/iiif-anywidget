@@ -79,10 +79,6 @@ We attach a `viewer.observe(...)` handler to the widget traits (`pixel_x`, `pixe
 ```python
 names = ["pixel_x", "pixel_y", "normalized_x", "normalized_y"]
 
-old_observer = getattr(viewer, "_marimo_observer", None)
-if old_observer is not None:
-    viewer.unobserve(old_observer, names=names)
-
 viewer.observe(push_state, names=names)
 viewer._marimo_observer = push_state
 push_state()

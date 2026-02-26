@@ -12,7 +12,7 @@ __generated_with = "0.20.2"
 app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
 
@@ -53,64 +53,22 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(coords_state, mo):
-    c = coords_state()
-    mo.md(f"""
-    *Last click* (pixels): `{c['pixel_x']:.2f},  {c['pixel_y']:.2f}`
-
-    *Normalized* (0.0:1.0): `{c['normalized_x']:.6f}, {c['normalized_y']:.6f}`
-    """)
-    return
-
-
-@app.cell
-def _(mo):
-    imgurl = mo.ui.text(
-        full_width=True,
-        label="*IIIF info.json URL*",
-        value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
-    )
-    height_value = mo.ui.slider(
-        start=100,
-        stop=1200,
-        step=10,
-        value=600,
-        label="*Viewer height value*",
-    )
-    height_unit = mo.ui.dropdown(
-        options=["px", "vh", "%"],
-        value="px",
-        label="*Height unit*",
-    )
-    return height_unit, height_value, imgurl
-
-
-@app.cell
-def _(height_unit, height_value):
-    height = f"{height_value.value}{height_unit.value}"
-    return (height,)
-
-
-@app.cell
-def _(height, height_unit, height_value, imgurl, mo):
+def _(height_pixels, imgurl, mo):
     mo.vstack([
         imgurl,
-        height_value,
-        height_unit,
-        mo.md(f"Current viewer height: **{height}**"),
+        height_pixels
     ])
     return
 
 
-@app.cell
-def _(IIIFImageOverlayViewer, height, imgurl):
-
-    viewer = IIIFImageOverlayViewer(
-        url=imgurl.value,
-        rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
-        height=height,
-    )
-    return (viewer,)
+@app.cell(hide_code=True)
+def _(coords_state, mo):
+    cstate = coords_state()
+    mo.vstack([
+        mo.md("**Last alt-click** (normalized to range `0.0:1.0`):"),
+        mo.md(f"`{cstate['normalized_x']:.6f}, {cstate['normalized_y']:.6f}`")
+    ], align="center")
+    return
 
 
 @app.cell(hide_code=True)
@@ -122,7 +80,76 @@ def _(viewer):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
+    ## Create overlay viewer
+    """)
+    return
+
+
+@app.cell
+def _():
+    mockrectangles = "0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22"
+    return (mockrectangles,)
+
+
+@app.cell
+def _(IIIFImageOverlayViewer, height, imgurl, mockrectangles):
+    viewer = IIIFImageOverlayViewer(url=imgurl.value,rectangles_csv=mockrectangles,height=height)
+    return (viewer,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
     ## Configuring observer for coordinates
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    Create marimo state values we'll observe, initializing to -1.0.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    coords_state, set_coords_state = mo.state(
+        {
+            "normalized_x": -1.0,
+            "normalized_y": -1.0,
+        }
+    )
+    return coords_state, set_coords_state
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    Attach a `viewer.observe(...)` handler to the widget traits `normalized_x, normalized_y` and push trait changes to that state
+    """)
+    return
+
+
+@app.cell
+def _(push_state, viewer):
+    names = ["normalized_x", "normalized_y"]
+
+    #old_observer = getattr(viewer, "_marimo_observer", None)
+    #if old_observer is not None:
+    #    viewer.unobserve(old_observer, names=names)
+
+    viewer.observe(push_state, names=names)
+    viewer._marimo_observer = push_state
+    push_state()
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    Function to update value of coordinates state from viewer object
     """)
     return
 
@@ -130,11 +157,9 @@ def _(mo):
 @app.cell
 def _(set_coords_state, viewer):
     def push_state(_change=None):
-        "Update valie of coordinates state from viewer object."
+        "Update value of coordinates state from viewer object."
         set_coords_state(
             {
-                "pixel_x": float(viewer.pixel_x),
-                "pixel_y": float(viewer.pixel_y),
                 "normalized_x": float(viewer.normalized_x),
                 "normalized_y": float(viewer.normalized_y),
             }
@@ -143,31 +168,33 @@ def _(set_coords_state, viewer):
     return (push_state,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## User selections
+    """)
+    return
+
+
 @app.cell
 def _(mo):
-    coords_state, set_coords_state = mo.state(
-        {
-            "pixel_x": -1.0,
-            "pixel_y": -1.0,
-            "normalized_x": -1.0,
-            "normalized_y": -1.0,
-        }
-    )
-    return coords_state, set_coords_state
+    imgurl = mo.ui.text(full_width=True,label="*IIIF info.json URL for image*",
+        value="https://framemark.vam.ac.uk/collections/2006AN7529/info.json")
+    return (imgurl,)
 
 
 @app.cell
-def _(push_state, viewer):
-    names = ["pixel_x", "pixel_y", "normalized_x", "normalized_y"]
+def _(mo):
+    height_pixels = mo.ui.slider(
+        start=100,stop=1200,step=10,value=600,show_value=True,
+        label="*Viewer height (pixels)*",)
+    return (height_pixels,)
 
-    old_observer = getattr(viewer, "_marimo_observer", None)
-    if old_observer is not None:
-        viewer.unobserve(old_observer, names=names)
 
-    viewer.observe(push_state, names=names)
-    viewer._marimo_observer = push_state
-    push_state()
-    return
+@app.cell
+def _(height_pixels):
+    height = f"{height_pixels.value}px"
+    return (height,)
 
 
 if __name__ == "__main__":
