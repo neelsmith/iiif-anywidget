@@ -1,10 +1,23 @@
 import json
 from pathlib import Path
 from urllib.error import URLError
-from urllib.request import urlopen
 
 import anywidget
 import traitlets
+
+from .iiifutils import Manifest
+
+
+def _manifest_to_json(manifest_obj, _widget):
+    if isinstance(manifest_obj, Manifest):
+        return manifest_obj.to_dict()
+    return None
+
+
+def _manifest_from_json(payload, _widget):
+    if payload is None:
+        return None
+    return Manifest.from_dict(payload)
 
 
 def normalize_url(url_value):
@@ -175,6 +188,11 @@ def extract_thumbnails(manifest_input):
 class IIIFThumbnailGallery(anywidget.AnyWidget):
     _esm = Path(__file__).parent / "static" / "thumbnail_gallery.js"
     manifest_url = traitlets.Unicode("").tag(sync=True)
+    manifest = traitlets.Instance(Manifest, allow_none=True, default_value=None).tag(
+        sync=True,
+        to_json=_manifest_to_json,
+        from_json=_manifest_from_json,
+    )
     items_json = traitlets.Unicode("[]").tag(sync=True)
     selected_info_url = traitlets.Unicode("").tag(sync=True)
     manifest_error = traitlets.Unicode("").tag(sync=True)
@@ -190,19 +208,23 @@ class IIIFThumbnailGallery(anywidget.AnyWidget):
     def _load_manifest(self):
         url_value = (self.manifest_url or "").strip()
         if not url_value:
+            self.manifest = None
+            self.items_json = "[]"
+            self.selected_info_url = ""
             self.manifest_error = ""
             return
 
         try:
-            with urlopen(url_value) as response:
-                manifest_data = json.load(response)
+            manifest_obj = Manifest.from_url(url_value)
         except (URLError, ValueError, OSError) as err:
+            self.manifest = None
             self.items_json = "[]"
             self.selected_info_url = ""
             self.manifest_error = str(err)
             return
 
-        thumbnails = extract_thumbnails(manifest_data)
+        self.manifest = manifest_obj
+        thumbnails = extract_thumbnails(manifest_obj.manifest_json)
         self.items_json = json.dumps(thumbnails)
         self.manifest_error = ""
 
@@ -210,5 +232,4 @@ class IIIFThumbnailGallery(anywidget.AnyWidget):
         if thumbnails and isinstance(thumbnails[0], dict):
             default_info_url = (thumbnails[0].get("info_url") or "").strip()
 
-        if default_info_url:
-            self.selected_info_url = default_info_url
+        self.selected_info_url = default_info_url

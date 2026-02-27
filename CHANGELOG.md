@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 
+## 0.5.0 - 2026-02-27
+
+### Adds
+
+- Adds `Manifest` model in `iiifutils` with URL parsing (`Manifest.from_url`) and serialization helpers (`to_dict` / `from_dict`) for synced widget state.
+- Adds `canvaslabel_for_imageid(manifest_json, image_id)` utility to resolve the canvas label for an image id across IIIF Presentation 2 and 3 manifest structures.
+- Adds and expands `scripts/smoke_thumbnail_gallery_manifest.py` smoke checks for manifest syncing, thumbnail extraction, and canvas-label lookup (IIIF v2 + v3).
+
+### Changes
+
+- Refactors `IIIFThumbnailGallery` to instantiate a `Manifest` object from `manifest_url` and expose it as a synced traitlet (`manifest`).
+- Updates thumbnail gallery frontend to react to `manifest` changes and derive thumbnails from `manifest.manifest_json`, with `items_json` fallback for compatibility.
+
+
+
 ## 0.4.1 - 2026-02-26
 
 ### Fixes
