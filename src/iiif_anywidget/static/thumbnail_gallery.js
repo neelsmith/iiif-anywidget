@@ -207,15 +207,6 @@ function extractThumbnailsFromManifest(manifestJson) {
 }
 
 function parseItems(model) {
-  const manifest = model.get("manifest");
-  if (manifest && typeof manifest === "object") {
-    const manifestJson = manifest.manifest_json;
-    const fromManifest = extractThumbnailsFromManifest(manifestJson);
-    if (fromManifest.length) {
-      return fromManifest;
-    }
-  }
-
   try {
     const raw = model.get("items_json") || "[]";
     const parsed = JSON.parse(raw);
@@ -416,7 +407,6 @@ function render({ model, el }) {
   };
 
   draw();
-  model.on("change:manifest", draw);
   model.on("change:items_json", draw);
   model.on("change:selected_info_url", draw);
   el.appendChild(root);
@@ -430,7 +420,6 @@ function render({ model, el }) {
     if (lazyImageObserver) {
       lazyImageObserver.disconnect();
     }
-    model.off("change:manifest", draw);
     model.off("change:items_json", draw);
     model.off("change:selected_info_url", draw);
     root.remove();

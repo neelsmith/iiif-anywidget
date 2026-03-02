@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 from iiif_anywidget.iiifutils import Manifest, canvaslabel_for_imageid
-from iiif_anywidget.thumbnail_gallery import IIIFThumbnailGallery
+from iiif_anywidget.thumbnail_gallery import IIIFThumbnailGallery, info_urls_from_manifest
 
 
 def main():
@@ -74,29 +74,29 @@ def main():
         manifest_path = Path(temp_dir) / "manifest.json"
         manifest_path.write_text(json.dumps(manifest_payload), encoding="utf-8")
         manifest_url = manifest_path.as_uri()
+        info_urls = info_urls_from_manifest(manifest_url)
 
-        gallery = IIIFThumbnailGallery(manifest_url=manifest_url)
+        gallery = IIIFThumbnailGallery(info_urls=info_urls)
         items = json.loads(gallery.items_json)
 
-        assert isinstance(gallery.manifest, Manifest)
-        assert gallery.manifest.source_url == manifest_url
-        assert isinstance(gallery.manifest.manifest_json, dict)
-        assert len(gallery.manifest.manifest_json.get("items", [])) == 1
+        assert isinstance(info_urls, list)
+        assert info_urls == ["https://example.org/iiif/image-1/info.json"]
         assert len(items) == 1
         assert items[0].get("info_url") == "https://example.org/iiif/image-1/info.json"
         assert gallery.selected_info_url == "https://example.org/iiif/image-1/info.json"
-        assert gallery.manifest_error == ""
+
+        manifest_obj = Manifest.from_url(manifest_url)
 
         label_from_raw_manifest = canvaslabel_for_imageid(
             manifest_payload,
             "https://example.org/iiif/image-1/full/1200,/0/default.jpg",
         )
         label_from_synced_payload = canvaslabel_for_imageid(
-            gallery.manifest.to_dict(),
+            manifest_obj.to_dict(),
             "https://example.org/iiif/image-1/info.json",
         )
         label_from_manifest_obj = canvaslabel_for_imageid(
-            gallery.manifest,
+            manifest_obj,
             "https://example.org/iiif/image-1",
         )
 

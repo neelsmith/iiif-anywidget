@@ -1,23 +1,10 @@
 import json
 from pathlib import Path
-from urllib.error import URLError
 
 import anywidget
 import traitlets
 
 from .iiifutils import Manifest
-
-
-def _manifest_to_json(manifest_obj, _widget):
-    if isinstance(manifest_obj, Manifest):
-        return manifest_obj.to_dict()
-    return None
-
-
-def _manifest_from_json(payload, _widget):
-    if payload is None:
-        return None
-    return Manifest.from_dict(payload)
 
 
 def normalize_url(url_value):
@@ -130,7 +117,54 @@ def info_url_from_canvas(canvas_item):
     return ""
 
 
+def extract_info_urls(manifest_input):
+    """Extracts a list of info.json URLs from a IIIF manifest dictionary."""
+    output = []
+    if not isinstance(manifest_input, dict):
+        return output
+
+    if isinstance(manifest_input.get("items"), list):
+        canvases_local = manifest_input.get("items", [])
+    elif isinstance(manifest_input.get("sequences"), list) and manifest_input["sequences"]:
+        canvases_local = manifest_input["sequences"][0].get("canvases", [])
+    else:
+        canvases_local = []
+
+    for canvas_item in canvases_local:
+        info_url = normalize_url(info_url_from_canvas(canvas_item))
+        if info_url and info_url not in output:
+            output.append(info_url)
+
+    return output
+
+
+def info_urls_from_manifest(manifest_source):
+    """Extracts a list of IIIF image info URLs from a manifest source, which can be a Manifest object, a dictionary, or a URL string."""
+    if isinstance(manifest_source, Manifest):
+        manifest_json = manifest_source.manifest_json
+    elif isinstance(manifest_source, dict):
+        manifest_json = manifest_source
+    elif isinstance(manifest_source, str):
+        manifest_json = Manifest.from_url(manifest_source).manifest_json
+    else:
+        return []
+
+    return extract_info_urls(manifest_json)
+
+
+def thumb_from_info_url(info_url):
+    clean = normalize_url(info_url)
+    if not clean:
+        return ""
+
+    suffix = "/info.json"
+    if clean.endswith(suffix):
+        return f"{clean[: -len(suffix)].rstrip('/')}/full/240,/0/default.jpg"
+    return ""
+
+
 def extract_thumbnails(manifest_input):
+    """Extracts a list of thumbnail information from a manifest input, which can be a dictionary representing the manifest."""
     output = []
     if not isinstance(manifest_input, dict):
         return output
@@ -187,49 +221,55 @@ def extract_thumbnails(manifest_input):
 
 class IIIFThumbnailGallery(anywidget.AnyWidget):
     _esm = Path(__file__).parent / "static" / "thumbnail_gallery.js"
-    manifest_url = traitlets.Unicode("").tag(sync=True)
-    manifest = traitlets.Instance(Manifest, allow_none=True, default_value=None).tag(
-        sync=True,
-        to_json=_manifest_to_json,
-        from_json=_manifest_from_json,
-    )
+    info_urls = traitlets.List(trait=traitlets.Unicode(), default_value=[]).tag(sync=True)
     items_json = traitlets.Unicode("[]").tag(sync=True)
     selected_info_url = traitlets.Unicode("").tag(sync=True)
-    manifest_error = traitlets.Unicode("").tag(sync=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._load_manifest()
+        self._sync_items_from_info_urls()
 
-    @traitlets.observe("manifest_url")
-    def _on_manifest_url_change(self, _change):
-        self._load_manifest()
+    @classmethod
+    def from_manifest(cls, manifest_url):
+        """Constructs a gallery from a IIIF manifest URL."""
+        info_urls = info_urls_from_manifest(manifest_url)
+        return cls(info_urls=info_urls)
 
-    def _load_manifest(self):
-        url_value = (self.manifest_url or "").strip()
-        if not url_value:
-            self.manifest = None
-            self.items_json = "[]"
-            self.selected_info_url = ""
-            self.manifest_error = ""
+    @traitlets.observe("info_urls")
+    def _on_info_urls_change(self, _change):
+        self._sync_items_from_info_urls()
+
+    def _sync_items_from_info_urls(self):
+        clean_info_urls = []
+        for info_url in self.info_urls:
+            normalized = normalize_url(info_url)
+            if normalized and normalized not in clean_info_urls:
+                clean_info_urls.append(normalized)
+
+        if clean_info_urls != self.info_urls:
+            self.info_urls = clean_info_urls
             return
 
-        try:
-            manifest_obj = Manifest.from_url(url_value)
-        except (URLError, ValueError, OSError) as err:
-            self.manifest = None
-            self.items_json = "[]"
+        items = []
+        for idx, info_url in enumerate(clean_info_urls, start=1):
+            thumb_url = thumb_from_info_url(info_url)
+            if not thumb_url:
+                continue
+
+            items.append(
+                {
+                    "label": f"Image {idx}",
+                    "thumb_url": thumb_url,
+                    "info_url": info_url,
+                }
+            )
+
+        self.items_json = json.dumps(items)
+
+        current_selection = normalize_url(self.selected_info_url)
+        if current_selection and current_selection in clean_info_urls:
+            self.selected_info_url = current_selection
+        elif clean_info_urls:
+            self.selected_info_url = clean_info_urls[0]
+        else:
             self.selected_info_url = ""
-            self.manifest_error = str(err)
-            return
-
-        self.manifest = manifest_obj
-        thumbnails = extract_thumbnails(manifest_obj.manifest_json)
-        self.items_json = json.dumps(thumbnails)
-        self.manifest_error = ""
-
-        default_info_url = ""
-        if thumbnails and isinstance(thumbnails[0], dict):
-            default_info_url = (thumbnails[0].get("info_url") or "").strip()
-
-        self.selected_info_url = default_info_url

@@ -28,9 +28,8 @@ A complete marimo notebook:
 ```python
 from iiif_anywidget import IIIFThumbnailGallery
 
-gallery = IIIFThumbnailGallery(
-	manifest_url="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest"
-)
+manifest_url = "https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest"
+gallery = IIIFThumbnailGallery.from_manifest(manifest_url)
 gallery
 ```
 

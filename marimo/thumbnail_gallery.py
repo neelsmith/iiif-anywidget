@@ -45,14 +45,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
-    Create thumbnail gallery from IIIF manifest:
+    Create thumbnail gallery directly from a IIIF manifest URL:
     """)
     return
 
 
 @app.cell
 def _(IIIFThumbnailGallery, manifest_url):
-    thumbnail_gallery = IIIFThumbnailGallery(manifest_url=manifest_url.value)
+    thumbnail_gallery = IIIFThumbnailGallery.from_manifest(manifest_url.value)
     return (thumbnail_gallery,)
 
 
@@ -141,14 +141,6 @@ def _():
         importlib.invalidate_caches()
         from iiif_anywidget import IIIFThumbnailGallery, IIIFViewer
     return IIIFThumbnailGallery, IIIFViewer, mo
-
-
-@app.cell(hide_code=True)
-def _(mo, thumbnail_gallery):
-    error = (thumbnail_gallery.manifest_error or "").strip()
-    if error:
-        mo.md(f"⚠️ Could not load manifest: `{error}`")
-    return
 
 
 if __name__ == "__main__":
