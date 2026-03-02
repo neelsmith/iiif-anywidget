@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Breaking changes
 
 - `IIIFThumbnailGallery` is now instantiated from a list of IIIF info URLs
+
+### Adds
+
 - `info_urls_from_manifest` function creates a list of IIIF info URLs from a manifest
 
 ## 0.5.0 - 2026-02-27
