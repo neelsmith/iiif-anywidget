@@ -23,8 +23,8 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(manifest_url):
-    manifest_url
+def _(manifest_url, mo, width_pixels):
+    mo.vstack([manifest_url, width_pixels])
     return
 
 
@@ -79,8 +79,8 @@ def _(mo):
 
 
 @app.cell
-def _(IIIFViewer, image_info_url):
-    viewer = IIIFViewer(url=image_info_url)
+def _(IIIFViewer, image_info_url, width):
+    viewer = IIIFViewer(url=image_info_url, width=width)
     return (viewer,)
 
 
@@ -98,6 +98,21 @@ def _(mo):
         value="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest",
         full_width=True,label="*Enter IIIF manifest URL*:")
     return (manifest_url,)
+
+
+@app.cell
+def _(mo):
+    width_pixels = mo.ui.slider(
+        start=100, stop=1600, step=10, value=900, show_value=True,
+        label="*Viewer width (pixels)*",
+    )
+    return (width_pixels,)
+
+
+@app.cell
+def _(width_pixels):
+    width = f"{width_pixels.value}px"
+    return (width,)
 
 
 @app.cell(hide_code=True)

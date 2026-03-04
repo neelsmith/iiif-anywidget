@@ -69,6 +69,14 @@ function parseRectangles(csvText) {
 }
 
 function render({ model, el }) {
+  const normalizeWidth = (value) => {
+    const text = `${value ?? ""}`.trim();
+    if (!text) {
+      return "100%";
+    }
+    return /^\d+(\.\d+)?$/.test(text) ? `${text}px` : text;
+  };
+
   const normalizeHeight = (value) => {
     const text = `${value ?? ""}`.trim();
     if (!text) {
@@ -78,7 +86,7 @@ function render({ model, el }) {
   };
 
   const container = document.createElement("div");
-  container.style.width = "100%";
+  container.style.width = normalizeWidth(model.get("width"));
   container.style.height = normalizeHeight(model.get("height"));
   el.appendChild(container);
 
@@ -186,6 +194,13 @@ function render({ model, el }) {
         }
       };
 
+      const applyWidthFromModel = () => {
+        container.style.width = normalizeWidth(model.get("width"));
+        if (viewer) {
+          viewer.forceResize();
+        }
+      };
+
       const onInteraction = (osdEvent, stage) => {
         const originalEvent = osdEvent?.originalEvent;
         const eventAlt = Boolean(
@@ -239,13 +254,16 @@ function render({ model, el }) {
 
       openFromModel();
       applyHeightFromModel();
+      applyWidthFromModel();
       model.on("change:url", openFromModel);
       model.on("change:rectangles_csv", drawOverlays);
       model.on("change:height", applyHeightFromModel);
+      model.on("change:width", applyWidthFromModel);
       stopUrlListening = () => model.off("change:url", openFromModel);
       stopRectsListening = () => model.off("change:rectangles_csv", drawOverlays);
       stopHandlers = () => {
         model.off("change:height", applyHeightFromModel);
+        model.off("change:width", applyWidthFromModel);
         viewer.removeHandler("canvas-press", onCanvasPress);
         viewer.removeHandler("canvas-click", onCanvasClick);
         viewer.removeHandler("canvas-release", onCanvasRelease);
@@ -278,6 +296,7 @@ export default { render };
     url = traitlets.Unicode("").tag(sync=True)
     rectangles_csv = traitlets.Unicode("").tag(sync=True)
     height = traitlets.Unicode("500px").tag(sync=True)
+    width = traitlets.Unicode(None, allow_none=True).tag(sync=True)
 
     pixel_x = traitlets.Float(-1.0).tag(sync=True)
     pixel_y = traitlets.Float(-1.0).tag(sync=True)

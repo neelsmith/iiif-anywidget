@@ -12,6 +12,7 @@ from iiif_anywidget import IIIFViewer
 viewer = IIIFViewer(
     url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
     height="650px",  # optional, defaults to "500px"
+    width="900px",   # optional, defaults to None (= 100% container width)
 )
 viewer
 ```
@@ -45,6 +46,7 @@ from iiif_anywidget import IIIFImageOverlayViewer
 viewer = IIIFImageOverlayViewer(
 	url="https://framemark.vam.ac.uk/collections/2006AN7529/info.json",
 	rectangles_csv="0.10,0.12,0.20,0.18\n0.45,0.35,0.16,0.22",
+    width="900px",  # optional, defaults to None (= 100% container width)
 )
 viewer
 ```

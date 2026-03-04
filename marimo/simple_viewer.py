@@ -28,8 +28,8 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(height_pixels, imgurl, mo):
-    mo.vstack([imgurl, height_pixels])
+def _(height_pixels, imgurl, mo, width_pixels):
+    mo.vstack([imgurl, height_pixels, width_pixels])
     return
 
 
@@ -48,8 +48,8 @@ def _(mo):
 
 
 @app.cell
-def _(IIIFViewer, height, imgurl):
-    viewer = IIIFViewer(url=imgurl.value, height=height) if imgurl.value else None
+def _(IIIFViewer, height, imgurl, width):
+    viewer = IIIFViewer(url=imgurl.value, height=height, width=width) if imgurl.value else None
     return (viewer,)
 
 
@@ -79,6 +79,18 @@ def _(mo):
 def _(height_pixels):
     height = f"{height_pixels.value}px"
     return (height,)
+
+
+@app.cell
+def _(mo):
+    width_pixels = mo.ui.slider(start=100,stop=1600,step=10,value=900, label="*Image width (pixels)*",show_value=True)
+    return (width_pixels,)
+
+
+@app.cell
+def _(width_pixels):
+    width = f"{width_pixels.value}px"
+    return (width,)
 
 
 @app.cell(hide_code=True)

@@ -21,6 +21,14 @@ function loadOpenSeadragon() {
 }
 
 function render({ model, el }) {
+  const normalizeWidth = (value) => {
+    const text = `${value ?? ""}`.trim();
+    if (!text) {
+      return "100%";
+    }
+    return /^\d+(\.\d+)?$/.test(text) ? `${text}px` : text;
+  };
+
   const normalizeHeight = (value) => {
     const text = `${value ?? ""}`.trim();
     if (!text) {
@@ -30,7 +38,7 @@ function render({ model, el }) {
   };
 
   const container = document.createElement("div");
-  container.style.width = "100%";
+  container.style.width = normalizeWidth(model.get("width"));
   container.style.height = normalizeHeight(model.get("height"));
   el.appendChild(container);
 
@@ -58,13 +66,23 @@ function render({ model, el }) {
       }
     };
 
+    const applyWidthFromModel = () => {
+      container.style.width = normalizeWidth(model.get("width"));
+      if (viewer) {
+        viewer.forceResize();
+      }
+    };
+
     openFromModel();
     applyHeightFromModel();
+    applyWidthFromModel();
     model.on("change:url", openFromModel);
     model.on("change:height", applyHeightFromModel);
+    model.on("change:width", applyWidthFromModel);
     stopListening = () => {
       model.off("change:url", openFromModel);
       model.off("change:height", applyHeightFromModel);
+      model.off("change:width", applyWidthFromModel);
     };
 
     const openFromThumbnailSelection = (event) => {
